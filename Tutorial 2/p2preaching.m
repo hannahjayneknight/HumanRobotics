@@ -14,13 +14,13 @@ qs_0 = pi/2;
 qe_0 = 130*pi/180;
 qw_0 = pi/2;
 
-ls_0 = 0.3;
-le_0 = 0.3;
-lw_0 = 0.15;
+ls = 0.3;
+le = 0.3;
+lw = 0.15;
 
 % Forward kinematics to find initial position of end-effector
-x_0 = ls_0*cos(qs_0) + le_0*cos(qe_0+qs_0-pi/2) + lw_0*cos(pi/2-qs_0-qe_0-qw_0);
-y_0 = ls_0*sin(qs_0) - le_0*sin(qe_0+qs_0-pi/2) - lw_0*sin(pi/2-qs_0-qe_0-qw_0);
+x_0 = ls*cos(qs_0) + le*cos(qe_0+qs_0-pi/2) + lw*cos(pi/2-qs_0-qe_0-qw_0);
+y_0 = ls*sin(qs_0) - le*sin(qe_0+qs_0-pi/2) - lw*sin(pi/2-qs_0-qe_0-qw_0);
 
 % trajectory of end-effector
 x = x_0 + x;
