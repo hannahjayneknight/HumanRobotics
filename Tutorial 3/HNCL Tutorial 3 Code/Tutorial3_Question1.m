@@ -13,10 +13,10 @@ close all;
 %% Initialisation
 
 % Define sampling rate
-dt = 0; % DEFINE HERE THE SAMPLING RATE
+dt = 0.01; % DEFINE HERE THE SAMPLING RATE
 
 % Define movement duration
-T = 0; % DEFINE HERE THE MOVEMENT DURATION
+T = 20; % DEFINE HERE THE MOVEMENT DURATION
 
 T_samples = fix(T/dt);
 
@@ -28,7 +28,8 @@ I = [0.0141,0.0188]; %Inertia moments kg*m^2
 cL = [0.165,0.2]; % m
 
 % Initial joint angles
-q_start = [0, 0]; % WRITE HERE THE INITIAL JOINT ANGLES
+q_start = [0, 30*pi/180]; % WRITE HERE THE INITIAL JOINT ANGLES
+shoulder_blocked = true;
 
 %% Initialisation
 
@@ -36,6 +37,7 @@ q = zeros(T_samples,2);
 q(1,:) = q_start;
 qdot = zeros(T_samples,2);
 qdot(1,:) = [0,0];
+qddot = [0 0];
 
 % Integration functions (uses Matlab anonymous function notation)
 
@@ -45,18 +47,22 @@ UpdateAngle = @(q,qdot)([q(1)+dt*qdot(1);
 UpdateVel = @(qdot,qddot)([qdot(1)+dt*qddot(1);
                        qdot(2)+dt*qddot(2)]); 
                    
-JointAccel = @(Torque,H,Cqdot)(H\(Torque-Cqdot)); 
+JointAccel = @(Torque,H,Cqdot)(H\(Torque-Cqdot)); %(given in dynamics lecture)
+
 
 
 for i=1:T_samples
+
+    if (i<200)
+        Torque = -0.1.*qdot(i, :)'+[0, 0.02]';
+    elseif (i>=200)
+        Torque = -0.1*qdot(i, :)';
+    end
     
-   % WRITE HERE THE TORQUE TERMS
-   % ....
-   % .... 
-   Torque = [0 0]';
-   % ....
-   % .... 
-    
+    if (shoulder_blocked==true)
+        Torque(1) = 0;
+    end
+
     % Compute Dynamics
     H= mass(m,l,cL,I,q(i,:));
     Cqdot = coriolis(I,m,l,cL,q(i,:),qdot(i,:));
