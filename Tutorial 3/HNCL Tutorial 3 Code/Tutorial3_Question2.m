@@ -13,10 +13,10 @@ close all;
 %% Initialisation
 
 % Define sampling rate
-dt = 0; % DEFINE HERE THE SAMPLING RATE
+dt = 0.01; % DEFINE HERE THE SAMPLING RATE
 
 % Define movement duration
-T = 0; % DEFINE HERE THE MOVEMENT DURATION
+T = 1; % DEFINE HERE THE MOVEMENT DURATION
 
 T_samples = fix(T/dt);
 
@@ -28,7 +28,7 @@ I = [0.0141,0.0188]; %Inertia moments kg*m^2
 cL = [0.165,0.2]; % m
 
 % Initial joint angles
-q_start = [0, 0]; % WRITE HERE THE INITIAL JOINT ANGLES
+q_start = [pi/2, 130*pi/180]; % WRITE HERE THE INITIAL JOINT ANGLES
 
 %% Compute reference (planned) trajectory
 [qr,qr_dot,xp] = planned_trajectory(l,dt,T,q_start);
@@ -52,17 +52,21 @@ JointAccel = @(Torque,H,Cqdot)(H\(Torque-Cqdot));
 
 % PD constants respectively proportional and derivative
 % DEFINE BELOW THE PD CONSTANTS
-  Kp=0;
-  Kd=0;
+  Kp=100;
+  Kd=10;
   
 for i=1:T_samples
     
    % WRITE HERE THE CONTROLLER EQUATION/TORQUE TERMS
-   % ....
-   % .... 
-   Torque = [0 0]';
-   % ....
-   % .... 
+   e = qr(i, :) - q(i, :);
+   %tracking_e = e + (e-error_prev); %needed??
+   %edot = (e-error_prev)/dt;
+   edot = qr_dot(i, :) - qdot(i, :);
+   Torque = Kp*e + Kd*edot;
+   Torque = Torque';
+ 
+   %Torque = [0 0]';
+
     
     % Compute dynamics
     H= mass(m,l,cL,I,q(i,:));
@@ -72,6 +76,8 @@ for i=1:T_samples
     % Movement integration
     qdot(i+1,:) = UpdateVel(qdot(i,:),qddot);
     q(i+1,:) = UpdateAngle(q(i,:),qdot(i+1,:));
+
+    error_prev = e;
     
 end
 

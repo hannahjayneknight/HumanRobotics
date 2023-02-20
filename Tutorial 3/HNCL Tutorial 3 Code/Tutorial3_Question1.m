@@ -29,7 +29,7 @@ cL = [0.165,0.2]; % m
 
 % Initial joint angles
 q_start = [0, 30*pi/180]; % WRITE HERE THE INITIAL JOINT ANGLES
-shoulder_blocked = true;
+shoulder_blocked = false;
 
 %% Initialisation
 
@@ -54,7 +54,7 @@ JointAccel = @(Torque,H,Cqdot)(H\(Torque-Cqdot)); %(given in dynamics lecture)
 for i=1:T_samples
 
     if (i<200)
-        Torque = -0.1.*qdot(i, :)'+[0, 0.02]';
+        Torque = -0.1.*qdot(i, :)'+[0, 0.02]'; %add the constant only to the elbow
     elseif (i>=200)
         Torque = -0.1*qdot(i, :)';
     end
