@@ -45,8 +45,9 @@ CurlField = [0 25; -25 0];                % in Ns/m
 % Simulation structure (NF, VF, channel, VF, NF) for simulation
 TrialStructure = ceil(ExptTrialStruct/5); %%%%%%%%%%% CHANGE DIVISION FACTOR FOR SHORTER SIMULATIONS 
 
-Alpha = 0.08; %%%%%%%%%%%% TRY IN THE RANGE [0.08 0.2] 
-Gamma = 0.001; %%%%%%%%%%% TRY IN THE RANGE [0.001 0.04 0.1] 
+Alpha = 0.2; %%%%%%%%%%%% TRY IN THE RANGE [0.08 0.2]
+Gamma = 0.1; %%%%%%%%%%% TRY IN THE RANGE [0.001 0.04 0.1] 
+
 
 % Euler integration
 UpdateSystem = @(x,a)([x(1,1)+dt*x(2,1)+0.5*dt^2*a(1,1); x(2,1)+a(1,1)*dt;
@@ -74,8 +75,8 @@ qDesired = [qDesired(1,:);
 
 q = zeros(4,size(qDesired,2),TrialStructure(end));
 q(:,1,:) = repmat(qDesired(:,1),[1,1,TrialStructure(end)]);
-uFF_old = zeros(1, 2);
-uPD_old = zeros(1, 2);
+
+MaxDev2b = zeros(TrialStructure(end),size(params, 1));
 
 % Experiment simulation loop
 for Trial=1:TrialStructure(end)
@@ -134,6 +135,7 @@ for Trial=1:TrialStructure(end)
     end
 end
 
+
 % Convert to cartesian space
 for Trial=1:TrialStructure(end)
     for i=1:size(NFTraj,2)-1
@@ -153,8 +155,10 @@ for Trial=1:TrialStructure(end)
     MaxDev(Trial,1) = max(abs(x(1,:,Trial)));
 end
 
+%save('results4.mat','MaxDev');
+
 toc
-%% VECTOR PLOT OF FORCE FIELD
+%% VECTOR PLOT OF FORCE FIELD (1a)
 
 MaxVel = 10;
 
@@ -174,7 +178,7 @@ ylabel('$\dot{y}$ [m/s]','interpreter','latex','fontsize',20);
 
 
 
-%% TRAJECTORY PLOT
+%% TRAJECTORY PLOT (1b)
 
 % Set color scale for plots
 ColorScale = colormap(bone);
@@ -239,7 +243,7 @@ legend(hFill(1:3),'NF','VF','Channel','location','northeast'); legend boxoff;
 
 %% SIMULATION PLOTS
 
-% TRAJECTORIES
+% TRAJECTORIES (2a)
 
 figure(4); close(4); f4=figure(4); set(f4,'name','2(a)','numbertitle','off'); set(gcf,'color','w');
 
@@ -267,7 +271,7 @@ axis equal; axis(PlotLimits);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% MAXIMUM ABSOLUTE LATERAL DEVIATION
+% MAXIMUM ABSOLUTE LATERAL DEVIATION (2a)
 subplot(2,1,2); hold on;
 
 plot(1:TrialStructure(end),MaxDev,'--ko','markersize',8,'linewidth',0.1);
@@ -278,7 +282,7 @@ hFill(3) = fill([TrialStructure(3)-1,TrialStructure(3)-1,TrialStructure(4)-1,Tri
 hFill(4) = fill([TrialStructure(4)-1,TrialStructure(4)-1,TrialStructure(5)-1,TrialStructure(5)-1],[0,MaxY,MaxY,0],'r');
 hFill(5) = fill([TrialStructure(5)-1,TrialStructure(5)-1,TrialStructure(end),TrialStructure(end)],[0,MaxY,MaxY,0],'b');
 
-xlim([1,TrialStructure(end)]);
+xlim([1,size(MaxDeviationData,1)]);
 ylim([0,1]*MaxY);
 set(hFill,'facealpha',0.2,'edgealpha',0)
 
@@ -287,5 +291,33 @@ ylabel('Max absolute lateral deviation (m)','fontsize',15);
 
 legend(hFill(1:3),'NF','VF','Channel','location','northeast'); legend boxoff;
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% My answer to Q2b
 
+figure(5); close(5); f5=figure(5); set(f5,'name','My Q2b','numbertitle','off'); set(gcf,'color','w');
 
+A = matfile('results1.mat'); % Alpha = 0.08; Gamma = 0.001;
+B = matfile('results2.mat'); % Alpha = 0.2; Gamma = 0.001;
+C = matfile('results3.mat');% Alpha = 0.08; Gamma = 0.1;
+D = matfile('results4.mat');% Alpha = 0.2; Gamma = 0.1;
+
+hold on;
+plot(1:TrialStructure(end),A.MaxDev,'g--o','markersize',8,'linewidth',0.1);
+plot(1:TrialStructure(end),B.MaxDev,'b--o','markersize',8,'linewidth',0.1);
+plot(1:TrialStructure(end),C.MaxDev,'--ko','markersize',8,'linewidth',0.1);
+plot(1:TrialStructure(end),D.MaxDev,'r--o','markersize',8,'linewidth',0.1);
+
+hFill(1) = fill([1,1,TrialStructure(2)-1,TrialStructure(2)-1],[0,MaxY,MaxY,0],'b');
+hFill(2) = fill([TrialStructure(2)-1,TrialStructure(2)-1,TrialStructure(3)-1,TrialStructure(3)-1],[0,MaxY,MaxY,0],'r');
+hFill(3) = fill([TrialStructure(3)-1,TrialStructure(3)-1,TrialStructure(4)-1,TrialStructure(4)-1],[0,MaxY,MaxY,0],'g');
+hFill(4) = fill([TrialStructure(4)-1,TrialStructure(4)-1,TrialStructure(5)-1,TrialStructure(5)-1],[0,MaxY,MaxY,0],'r');
+hFill(5) = fill([TrialStructure(5)-1,TrialStructure(5)-1,TrialStructure(end),TrialStructure(end)],[0,MaxY,MaxY,0],'b');
+
+xlim([1,size(MaxDeviationData,1)]);
+ylim([0,1]*MaxY);
+set(hFill,'facealpha',0.2,'edgealpha',0)
+
+xlabel('Trials','fontsize',15);
+ylabel('Max absolute lateral deviation (m)','fontsize',15);
+
+legend(hFill(1:3),'NF','VF','Channel','location','northeast'); legend boxoff;
