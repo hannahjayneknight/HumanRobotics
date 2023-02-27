@@ -13,6 +13,7 @@ clc; set(0,'DefaultFigureWindowStyle','docked'); tic
 %             angle_elbow;    angle_velocity_elbow];
 %
 % Atsushi Takagi 10/02/2016 modified by Silvia Muceli 14/02/2018
+% Modified by Hannah Knight 27/02/2023
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load reference trajectory for controller and experimental data
 load Tutorial4.mat;
@@ -73,6 +74,8 @@ qDesired = [qDesired(1,:);
 
 q = zeros(4,size(qDesired,2),TrialStructure(end));
 q(:,1,:) = repmat(qDesired(:,1),[1,1,TrialStructure(end)]);
+uFF_old = zeros(1, 2);
+uPD_old = zeros(1, 2);
 
 % Experiment simulation loop
 for Trial=1:TrialStructure(end)
@@ -102,11 +105,15 @@ for Trial=1:TrialStructure(end)
     % TO BE IMPLEMENTED
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
+     
+        if Trial ~=1
+            uFF(:,i,Trial) =  Alpha*uPD(:, i,Trial-1) + (1-Gamma)*uFF(:, i,Trial-1);
+        end
         
         % Compute PD control
         uPD(:,i,Trial) = [K*(qDesired(1,i)-q(1,i,Trial))+D*(qDesired(2,i)-q(2,i,Trial));
             K*(qDesired(3,i)-q(3,i,Trial))+D*(qDesired(4,i)-q(4,i,Trial))];
+        uPD_old = uPD;
         
         % Calculate mass matrix of arm
         H = mass([Mass_S Mass_E],[Length_S Length_E],[CoM_S CoM_E],[MoI_S MoI_E],[q(1,i,Trial) q(3,i,Trial)]);
