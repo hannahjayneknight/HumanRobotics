@@ -29,7 +29,7 @@ cL = [0.165,0.2]; % m
 
 % Initial joint angles
 q_start = [0, 30*pi/180]; % WRITE HERE THE INITIAL JOINT ANGLES
-shoulder_blocked = false;
+shoulder_blocked = true;
 
 %% Initialisation
 

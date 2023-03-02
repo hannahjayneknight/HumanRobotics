@@ -76,7 +76,6 @@ qDesired = [qDesired(1,:);
 q = zeros(4,size(qDesired,2),TrialStructure(end));
 q(:,1,:) = repmat(qDesired(:,1),[1,1,TrialStructure(end)]);
 
-MaxDev2b = zeros(TrialStructure(end),size(params, 1));
 
 % Experiment simulation loop
 for Trial=1:TrialStructure(end)
@@ -282,7 +281,7 @@ hFill(3) = fill([TrialStructure(3)-1,TrialStructure(3)-1,TrialStructure(4)-1,Tri
 hFill(4) = fill([TrialStructure(4)-1,TrialStructure(4)-1,TrialStructure(5)-1,TrialStructure(5)-1],[0,MaxY,MaxY,0],'r');
 hFill(5) = fill([TrialStructure(5)-1,TrialStructure(5)-1,TrialStructure(end),TrialStructure(end)],[0,MaxY,MaxY,0],'b');
 
-xlim([1,size(MaxDeviationData,1)]);
+xlim([1,TrialStructure(end)]);
 ylim([0,1]*MaxY);
 set(hFill,'facealpha',0.2,'edgealpha',0)
 
@@ -313,7 +312,7 @@ hFill(3) = fill([TrialStructure(3)-1,TrialStructure(3)-1,TrialStructure(4)-1,Tri
 hFill(4) = fill([TrialStructure(4)-1,TrialStructure(4)-1,TrialStructure(5)-1,TrialStructure(5)-1],[0,MaxY,MaxY,0],'r');
 hFill(5) = fill([TrialStructure(5)-1,TrialStructure(5)-1,TrialStructure(end),TrialStructure(end)],[0,MaxY,MaxY,0],'b');
 
-xlim([1,size(MaxDeviationData,1)]);
+xlim([1,TrialStructure(end)]);
 ylim([0,1]*MaxY);
 set(hFill,'facealpha',0.2,'edgealpha',0)
 

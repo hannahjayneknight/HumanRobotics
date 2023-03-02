@@ -16,7 +16,7 @@ close all;
 dt = 0.01; % DEFINE HERE THE SAMPLING RATE
 
 % Define movement duration
-T = 1; % DEFINE HERE THE MOVEMENT DURATION
+T = 0.2; % DEFINE HERE THE MOVEMENT DURATION
 
 T_samples = fix(T/dt);
 
@@ -52,7 +52,7 @@ JointAccel = @(Torque,H,Cqdot)(H\(Torque-Cqdot));
 
 % PD constants respectively proportional and derivative
 % DEFINE BELOW THE PD CONSTANTS
-  Kp=100;
+  Kp=1600;
   Kd=10;
   
 for i=1:T_samples
